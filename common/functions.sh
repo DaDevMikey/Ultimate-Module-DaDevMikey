@@ -238,60 +238,6 @@ if ! $BOOTMODE; then
   rm -rf $NVBASE/modules_update/$MODID $TMPDIR 2>/dev/null
   exit 0
 fi
-
-ui_print "- Downloading required files..."
-
-# Function to download a file
-# $1: file name
-# $2: destination path
-download_file() {
-  local file_name="$1"
-  local dest_path="$2"
-  local url="https://github.com/DaDevMikey/one-ui-8.5-apk-s/releases/download/3.0.0-CYK7/$file_name"
-  local download_path="$TMPDIR/$file_name"
-
-  ui_print "  Downloading $file_name..."
-  # Using curl with location following and output to file
-  if ! curl -L -o "$download_path" "$url"; then
-    abort "! Download failed for $file_name"
-  fi
-
-  mkdir -p "$(dirname "$dest_path")"
-  mv -f "$download_path" "$dest_path"
-  ui_print "  $file_name downloaded."
-}
-
-# List of files to download
-download_file "AODService_v80.apk" "$MODPATH/system/priv-app/AODService_v80/AODService_v80.apk"
-download_file "DeviceDiagnostics.apk" "$MODPATH/system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk"
-download_file "DigitalWellbeing.apk" "$MODPATH/system/priv-app/DigitalWellbeing/DigitalWellbeing.apk"
-download_file "DressRoom.apk" "$MODPATH/system/priv-app/DressRoom/DressRoom.apk"
-download_file "GalaxyApps_OPEN.apk" "$MODPATH/system/priv-app/GalaxyApps_OPEN/GalaxyApps_OPEN.apk"
-download_file "GalaxyResourceUpdater.apk" "$MODPATH/system/app/GalaxyResourceUpdater/GalaxyResourceUpdater.apk"
-download_file "GalleryWidget.apk" "$MODPATH/system/app/GalleryWidget/GalleryWidget.apk"
-download_file "Moments.apk" "$MODPATH/system/priv-app/Moments/Moments.apk"
-download_file "MultiControl.apk" "$MODPATH/system/priv-app/MultiControl/MultiControl.apk"
-download_file "MyDevice.apk" "$MODPATH/system/priv-app/MyDevice/MyDevice.apk"
-download_file "PhotoEditor_AIFull.apk" "$MODPATH/system/priv-app/PhotoEditor_AIFull/PhotoEditor_AIFull.apk"
-download_file "PhotoRemasterService.apk" "$MODPATH/system/priv-app/PhotoRemasterService/PhotoRemasterService.apk"
-download_file "PrivacyDashboard.apk" "$MODPATH/system/priv-app/PrivacyDashboard/PrivacyDashboard.apk"
-download_file "Routines.apk" "$MODPATH/system/priv-app/Routines/Routines.apk"
-download_file "SamsungContacts.apk" "$MODPATH/system/priv-app/SamsungContacts/SamsungContacts.apk"
-download_file "SamsungDialer.apk" "$MODPATH/system/priv-app/SamsungDialer/SamsungDialer.apk"
-download_file "SamsungGallery2018.apk" "$MODPATH/system/priv-app/SamsungGallery2018/SamsungGallery2018.apk"
-download_file "SamsungInCallUI.apk" "$MODPATH/system/priv-app/SamsungInCallUI/SamsungInCallUI.apk"
-download_file "SamsungSmartSuggestions.apk" "$MODPATH/system/priv-app/SamsungSmartSuggestions/SamsungSmartSuggestions.apk"
-download_file "SamsungWeather.apk" "$MODPATH/system/priv-app/SamsungWeather/SamsungWeather.apk"
-download_file "SecMyFiles2020.apk" "$MODPATH/system/priv-app/SecMyFiles2020/SecMyFiles2020.apk"
-download_file "SecSettings.apk" "$MODPATH/system/priv-app/SecSettings/SecSettings.apk"
-download_file "SecSettingsIntelligence.apk" "$MODPATH/system/priv-app/SecSettingsIntelligence/SecSettingsIntelligence.apk"
-download_file "SecTelephonyProvider.apk" "$MODPATH/system/priv-app/SecTelephonyProvider/SecTelephonyProvider.apk"
-download_file "SettingsProvider.apk" "$MODPATH/system/priv-app/SettingsProvider/SettingsProvider.apk"
-download_file "SmartCapture.apk" "$MODPATH/system/priv-app/SmartCapture/SmartCapture.apk"
-download_file "SmartManager_v5.apk" "$MODPATH/system/priv-app/SmartManager_v5/bruh"
-download_file "SmartManager_v6_DeviceSecurity.apk" "$MODPATH/system/app/SmartManager_v6_DeviceSecurity/bruh"
-download_file "TelephonyUI.apk" "$MODPATH/system/priv-app/TelephonyUI/TelephonyUI.apk"
-
 ui_print "- Extracting module files"
 unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d $MODPATH >&2
 [ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
@@ -404,33 +350,35 @@ WALL_KEY=$(wait_for_key)
     ui_print " Press Volume Up for S24U Walls "
     ui_print " Press Volume Down for S22U Walls "
     sleep 2
-    WALLC_KEY=$(wait_for_key)
-    if [ "$WALLC_KEY" = "UP" ]; then
-      ui_print " Setting S24U Walls... "
-      ui_print "***********************************************"
-      download_file "wallpaper-res-s24u.apk" "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res.apk"
-    fi
-    if [ "$WALLC_KEY" = "DOWN" ]; then
-      ui_print " Setting S22U Walls... "
-      ui_print "***********************************************"
-      download_file "wallpaper-res.apk" "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res.apk"
-    fi
+   WALLC_KEY=$(wait_for_key)
+   if [ "$WALLC_KEY" = "UP" ]; then
+    ui_print " Setting S24U Walls... "
+    ui_print "***********************************************"
+    rm -rf "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res-s22u.apk"
+    mv -f "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res-s24u.apk" "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res.apk"
+   fi
+   if [ "$WALLC_KEY" = "DOWN" ]; then
+    ui_print " Setting S22U Walls... "
+    ui_print "***********************************************"
+    rm -rf "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res-s24u.apk"
+    mv -f "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res-s22u.apk" "$MODPATH/system/priv-app/wallpaper-res/wallpaper-res.apk"
+   fi
   fi
-# Device values: 0=S23,1=S23+,2=S23U,3=Support more devices wen?
+# Device values: 0=S22,1=S22+,2=S22U,3=Support more devices wen?
 MODEL="$(getprop ro.boot.em.model)"
 case "$MODEL" in
-  SM-S911B|SM-S911N|SM-S9110|SM-S931B)
+  SM-S901B|SM-S901N|SM-S9010|SM-S931B)
     is_device=0
     ;;
-  SM-S916B|SM-S916N|SM-S9160|SM-S936B)
+  SM-S906B|SM-S906N|SM-S9060|SM-S936B)
     is_device=1
     ;;
-  SM-S918B|SM-S918N|SM-S9180|SM-S938B)
+  SM-S908B|SM-S908N|SM-S9080|SM-S938B)
     is_device=2
     ;;
 esac
 if [ "$is_device" = "0" ]; then
-  ui_print "  Detected S23 Base  "
+  ui_print "  Detected S22 Base  "
   rm -f "$MODPATH/system/cameradata/camera-feature.xml"
   rm -f "$MODPATH/system/etc/floating_feature.xml"
   rm -f "$MODPATH/system.prop"
@@ -449,7 +397,7 @@ if [ "$is_device" = "0" ]; then
   ui_print "  After rebooting, check data/adb/modules/CyberK_S23X/product/overlay/instructions.txt for auto aod  "
 fi
 if [ "$is_device" = "1" ]; then
-  ui_print "  Detected S23+  "
+  ui_print "  Detected S22+  "
   rm -f "$MODPATH/system/cameradata/camera-feature.xml"
   rm -f "$MODPATH/system/etc/floating_feature.xml"
   rm -f "$MODPATH/system.prop"
@@ -468,7 +416,7 @@ if [ "$is_device" = "1" ]; then
   ui_print "  After rebooting, check data/adb/modules/CyberK_S23X/product/overlay/instructions.txt for auto aod  "
 fi
 if [ "$is_device" = "2" ]; then
-  ui_print "  Detected S23 Ultra  " 
+  ui_print "  Detected S22 Ultra  " 
   rm -rf "$MODPATH/system/cameradata/camera-feature-s23.xml"
   rm -rf "$MODPATH/system/etc/floating_feature-s23.xml"
   rm -rf "$MODPATH/system-s23.prop"
@@ -501,3 +449,4 @@ for i in $(find $MODPATH/system/vendor $MODPATH/vendor -type f -name *".apk" 2>/
 done
 set_permissions
 cleanup
+
